@@ -3,7 +3,7 @@
 ### How to use
 1. Create directory `Desktop/in` under your Home directory
 2. Place json files with rendering details into `Desktop/in`, make sure files are versioned i.e. `xxx__v1.json`
-3. Call from mobile POST `http://localhost:8081/getFlavor` & specify appId in body
+3. Call from mobile GET `http://localhost:8081/get-flavor/{appId}`
 
 ### How it functions
 1. User place json files for rendering in specified directory

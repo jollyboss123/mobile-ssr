@@ -8,6 +8,8 @@ import kotlinx.coroutines.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -24,28 +26,28 @@ class MainController {
         val logger: Logger = LoggerFactory.getLogger(this::class.java)
     }
 
-    @PostMapping
-    suspend fun getFlavor(@RequestBody request: FlavorRequest): FlavorResponse {
-        logger.info("get flavor start")
+    @GetMapping("/get-flavor/{appId}")
+    suspend fun getFlavor(@PathVariable appId: String): FlavorResponse {
+        logger.info("get flavor for $appId start")
         try {
-            val req = request.validate()
+//            val req = request.validate()
 
             return supervisorScope {
                 try {
-                    val dm = getDataModel(req, this)
+                    val dm = getDataModel(appId, this)
                     getResponse(dm)
                 } finally {
-                    logger.info("get flavor end")
+                    logger.info("get flavor $appId end")
                     this.coroutineContext.cancelChildren()
                 }
             }
         } catch (e: Throwable) {
-            logger.info("get flavor error")
+            logger.info("get flavor $appId error")
             throw getErrorStatus(e)
         }
     }
 
-    suspend fun getDataModel(request: FlavorRequest, coroutineScope: CoroutineScope): AppFlavorDataModel {
+    suspend fun getDataModel(appId: String, coroutineScope: CoroutineScope): AppFlavorDataModel {
         return coroutineScope.run {
             val colorSchemes = async(start = CoroutineStart.LAZY) {
                 Result.runCatching {
