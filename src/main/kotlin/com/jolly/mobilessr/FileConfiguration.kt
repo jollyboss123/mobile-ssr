@@ -25,11 +25,11 @@ class ChannelConfiguration {
 }
 
 @Configuration
-class FileConfiguration(private val channels: ChannelConfiguration, private val cacheManager: CacheManager) {
+class FileConfiguration(private val channels: ChannelConfiguration, private val customCacheManager: CustomCacheManager) {
     private val input = File("${System.getenv("HOME")}/Desktop/in")
     private val output = File("${System.getenv("HOME")}/Desktop/out")
     private val mapper = jacksonObjectMapper()
-    private val fileVer: AtomicInteger = AtomicInteger()
+    val fileVer: AtomicInteger = AtomicInteger()
 
     @Bean
     fun filesFlow(): IntegrationFlow = integrationFlow(
@@ -52,7 +52,7 @@ class FileConfiguration(private val channels: ChannelConfiguration, private val 
             val render: Render? = mapper.readValue(message.payload as String)
             render?.let { r ->
                 r.appId.let { appId ->
-                    cacheManager.apply {
+                    customCacheManager.apply {
                         colorSchemeMap[appId] = ColorScheme(r.colorSchemes.primary, r.colorSchemes.secondary)
                         assetMap[appId] = Asset(r.assets.logo)
                         titleMap[appId] = Title(r.titles.main, r.titles.subtitle)
@@ -68,7 +68,7 @@ class FileConfiguration(private val channels: ChannelConfiguration, private val 
         handle(Files.outboundAdapter(output).autoCreateDirectory(true))
     }
 
-    private fun checkVersion(file: File): Boolean {
+    fun checkVersion(file: File): Boolean {
         val versionRegex = """.*__v(\d+)\.json""".toRegex()
         val fileName = file.name
         val matchResult = versionRegex.matchEntire(fileName)
@@ -90,7 +90,7 @@ data class Render(
 fun AtomicInteger.compareAndSetIfGreaterThan(newValue: Int): Boolean {
     do {
         val oldValue = get()
-        if (newValue < oldValue) {
+        if (newValue <= oldValue) {
             return false
         }
     } while (!compareAndSet(oldValue, newValue))

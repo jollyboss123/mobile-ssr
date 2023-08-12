@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author jolly
  */
 @Component
-class CacheManager {
+class CustomCacheManager {
     var colorSchemeMap: ConcurrentHashMap<String, ColorScheme> = ConcurrentHashMap<String, ColorScheme>()
     var titleMap: ConcurrentHashMap<String, Title> = ConcurrentHashMap<String, Title>()
     var assetMap: ConcurrentHashMap<String, Asset> = ConcurrentHashMap<String, Asset>()

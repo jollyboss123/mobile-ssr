@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
@@ -21,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException
  */
 @RestController
 @RequestMapping
-class MainController(private val cacheManager: CacheManager) {
+class MainController(private val customCacheManager: CustomCacheManager) {
     companion object {
         val logger: Logger = LoggerFactory.getLogger(this::class.java)
     }
@@ -51,17 +49,17 @@ class MainController(private val cacheManager: CacheManager) {
         return coroutineScope.run {
             val colorSchemes = async(start = CoroutineStart.LAZY) {
                 Result.runCatching {
-                    cacheManager.colorSchemeMap[appId] ?: throw NoSuchElementException("ColorScheme not found")
+                    customCacheManager.colorSchemeMap[appId] ?: throw NoSuchElementException("ColorScheme not found")
                 }
             }
             val titles = async(start = CoroutineStart.LAZY) {
                 Result.runCatching {
-                    cacheManager.titleMap[appId] ?: throw NoSuchElementException("Title not found")
+                    customCacheManager.titleMap[appId] ?: throw NoSuchElementException("Title not found")
                 }
             }
             val assets = async(start = CoroutineStart.LAZY) {
                 Result.runCatching {
-                    cacheManager.assetMap[appId] ?: throw NoSuchElementException("Asset not found")
+                    customCacheManager.assetMap[appId] ?: throw NoSuchElementException("Asset not found")
                 }
             }
             AppFlavorDataModel(colorSchemes, titles, assets)
