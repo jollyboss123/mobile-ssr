@@ -21,7 +21,7 @@ import org.springframework.web.server.ResponseStatusException
  */
 @RestController
 @RequestMapping
-class MainController {
+class MainController(private val cacheManager: CacheManager) {
     companion object {
         val logger: Logger = LoggerFactory.getLogger(this::class.java)
     }
@@ -51,17 +51,17 @@ class MainController {
         return coroutineScope.run {
             val colorSchemes = async(start = CoroutineStart.LAZY) {
                 Result.runCatching {
-                    //TODO: fetch color schemes from cache
+                    cacheManager.colorSchemeMap[appId] ?: throw NoSuchElementException("ColorScheme not found")
                 }
             }
             val titles = async(start = CoroutineStart.LAZY) {
                 Result.runCatching {
-                    //TODO: fetch titles from cache
+                    cacheManager.titleMap[appId] ?: throw NoSuchElementException("Title not found")
                 }
             }
             val assets = async(start = CoroutineStart.LAZY) {
                 Result.runCatching {
-                    //TODO: fetch assets from cache
+                    cacheManager.assetMap[appId] ?: throw NoSuchElementException("Asset not found")
                 }
             }
             AppFlavorDataModel(colorSchemes, titles, assets)

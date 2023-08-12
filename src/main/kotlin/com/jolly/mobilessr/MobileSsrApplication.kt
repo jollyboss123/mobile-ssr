@@ -2,6 +2,7 @@ package com.jolly.mobilessr
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.integration.dsl.IntegrationFlow
 import org.springframework.integration.dsl.MessageChannels
@@ -11,6 +12,7 @@ import org.springframework.messaging.MessageChannel
 import java.io.File
 
 @SpringBootApplication
+@EnableCaching
 class MobileSsrApplication
 
 fun main(args: Array<String>) {
